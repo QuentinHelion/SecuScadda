@@ -23,10 +23,10 @@ def write_outputs(convoyeur, generateur, blade,
     client.write_coil(8, slot1_turn)      # Sorter 1 turn
     client.write_coil(5, slot2_belt)      # Sorter 2 belt
     client.write_coil(6, slot2_turn)      # Sorter 2 turn
-    client.write_coil(9, slot3_belt)      # Sorter 3 belt
+    client.write_coil(3, slot3_belt)      # Sorter 3 belt
     client.write_coil(4, slot3_turn)      # Sorter 3 turn
 
-# 🧼 Initialisation
+# Initialisation
 write_outputs(False, False, True)
 
 try:
@@ -79,19 +79,19 @@ try:
             piece_id = detection_queue.popleft()
             if piece_id in [1, 2, 3]:  # BLEU → Sorter 1
                 if prev_piece == False or prev_piece == "blue":
-                    write_outputs(True, True, False, slot1_belt=True, slot1_turn=True)
+                    write_outputs(True, True, False, slot3_belt=True, slot3_turn=True)
                 else:
                     write_outputs(False, True, True, slot2_belt=True, slot2_turn=True)
                     time.sleep(2.5)
-                    write_outputs(False, True, False, slot1_belt=True, slot1_turn=True)
+                    write_outputs(False, True, False, slot3_belt=True, slot3_turn=True)
                 prev_piece = "blue"
 
             elif piece_id in [4, 5, 6]:  # VERT → Sorter 2
                 if prev_piece == False or prev_piece == "green":
                     write_outputs(True, True, False, slot2_belt=True, slot2_turn=True)
                 else:
-                    write_outputs(False, True, True, slot1_belt=True, slot1_turn=True)
-                    time.sleep(4)
+                    write_outputs(False, True, True, slot3_belt=True, slot3_turn=True)
+                    time.sleep(1)
                     write_outputs(False, True, False, slot2_belt=True, slot2_turn=True)
                 prev_piece = "green"
 
