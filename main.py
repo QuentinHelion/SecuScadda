@@ -71,32 +71,33 @@ try:
 
         # ➕ Ajout à la queue si pièce détectée
         if simulation_active and capteur_id != 0 and (now - last_detection_time) > detection_delay:
-            print(f"📦 Pièce détectée, ID = {capteur_id}")
             detection_queue.append(capteur_id)
             last_detection_time = now
 
         # 🎯 Si une pièce est à traiter (FIFO)
         if simulation_active and detection_queue:
             piece_id = detection_queue.popleft()
-            time.sleep(2)
-            write_outputs(False, True, False)
             if piece_id in [1, 2, 3]:  # BLEU → Sorter 1
-                print("🔵 Tri BLEU")
-                write_outputs(False, True, False, slot1_belt=True, slot1_turn=True)
-                time.sleep(4)
+                if prev_piece == False or prev_piece == "blue":
+                    write_outputs(True, True, False, slot1_belt=True, slot1_turn=True)
+                else:
+                    write_outputs(False, True, True, slot2_belt=True, slot2_turn=True)
+                    time.sleep(2.5)
+                    write_outputs(False, True, False, slot1_belt=True, slot1_turn=True)
+                prev_piece = "blue"
 
             elif piece_id in [4, 5, 6]:  # VERT → Sorter 2
-                print("🟢 Tri VERT")
-                write_outputs(False, True, False, slot2_belt=True, slot2_turn=True)
-                time.sleep(2.5)
+                if prev_piece == False or prev_piece == "green":
+                    write_outputs(True, True, False, slot2_belt=True, slot2_turn=True)
+                else:
+                    write_outputs(False, True, True, slot1_belt=True, slot1_turn=True)
+                    time.sleep(4)
+                    write_outputs(False, True, False, slot2_belt=True, slot2_turn=True)
+                prev_piece = "green"
 
             elif piece_id in [7, 8, 9]:  # AUTRES → Sorter 3
                 print("🟡 Tri AUTRE")
                 write_outputs(False, True, False, slot3_belt=True, slot3_turn=True)
-                time.sleep(1)
-
-            # Retour à l'état de fonctionnement normal
-            write_outputs(True, True, False)
 
         # Mise à jour des états boutons
         prev_blanc = bouton_blanc
