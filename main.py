@@ -9,6 +9,7 @@ simulation_active = False
 prev_blanc = False
 prev_noir = False
 prev_bleu = False
+prev_piece = False
 detection_queue = deque()
 
 def write_outputs(convoyeur, generateur, blade,
@@ -18,12 +19,12 @@ def write_outputs(convoyeur, generateur, blade,
     client.write_coil(0, convoyeur)       # Entry conveyor
     client.write_coil(1, blade)           # Stop blade
     client.write_coil(2, generateur)      # Exit conveyor
-    client.write_coil(5, slot1_belt)      # Sorter 1 belt
-    client.write_coil(4, slot1_turn)      # Sorter 1 turn
-    client.write_coil(7, slot2_belt)      # Sorter 2 belt
+    client.write_coil(7, slot1_belt)      # Sorter 1 belt
+    client.write_coil(8, slot1_turn)      # Sorter 1 turn
+    client.write_coil(5, slot2_belt)      # Sorter 2 belt
     client.write_coil(6, slot2_turn)      # Sorter 2 turn
     client.write_coil(9, slot3_belt)      # Sorter 3 belt
-    client.write_coil(8, slot3_turn)      # Sorter 3 turn
+    client.write_coil(4, slot3_turn)      # Sorter 3 turn
 
 # 🧼 Initialisation
 write_outputs(False, False, True)
@@ -77,21 +78,22 @@ try:
         # 🎯 Si une pièce est à traiter (FIFO)
         if simulation_active and detection_queue:
             piece_id = detection_queue.popleft()
-
+            time.sleep(2)
+            write_outputs(False, True, False)
             if piece_id in [1, 2, 3]:  # BLEU → Sorter 1
                 print("🔵 Tri BLEU")
-                write_outputs(True, True, False, slot1_belt=True, slot1_turn=True)
-                time.sleep(1.2)
+                write_outputs(False, True, False, slot1_belt=True, slot1_turn=True)
+                time.sleep(4)
 
             elif piece_id in [4, 5, 6]:  # VERT → Sorter 2
                 print("🟢 Tri VERT")
-                write_outputs(True, True, False, slot2_belt=True, slot2_turn=True)
-                time.sleep(1.2)
+                write_outputs(False, True, False, slot2_belt=True, slot2_turn=True)
+                time.sleep(2.5)
 
             elif piece_id in [7, 8, 9]:  # AUTRES → Sorter 3
                 print("🟡 Tri AUTRE")
-                write_outputs(True, True, False, slot3_belt=True, slot3_turn=True)
-                time.sleep(1.2)
+                write_outputs(False, True, False, slot3_belt=True, slot3_turn=True)
+                time.sleep(1)
 
             # Retour à l'état de fonctionnement normal
             write_outputs(True, True, False)
